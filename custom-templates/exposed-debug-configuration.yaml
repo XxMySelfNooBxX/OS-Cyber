@@ -1,0 +1,40 @@
+id: exposed-debug-configuration
+
+info:
+  name: Exposed Debug Configuration Endpoint - Information Disclosure
+  author: cyberbank-qa
+  severity: medium
+  description: |
+    Detects publicly accessible debug/config endpoint that exposes internal application
+    configuration including environment type, debug mode status, service version, and
+    database engine. This constitutes an information disclosure vulnerability that can
+    aid attackers in fingerprinting the application stack.
+    Violates CERT-In 2022 directives on configuration security and OWASP API Security
+    Top 10 - API8:2023 Security Misconfiguration.
+  tags: exposure,debug,config,misconfiguration,api-governance,cyberbank
+  reference:
+    - https://owasp.org/API-Security/editions/2023/en/0xa8-security-misconfiguration/
+    - https://www.cert-in.org.in/
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/debug/config"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - '"debug_enabled": true'
+
+    extractors:
+      - type: json
+        name: config_metadata
+        json:
+          - ".app_env"
+          - ".db_engine"
+

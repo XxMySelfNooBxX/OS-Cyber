@@ -1,0 +1,38 @@
+id: missing-http-security-headers
+
+info:
+  name: Missing HTTP Security Headers - Response Header Hardening
+  author: cyberbank-qa
+  severity: low
+  description: |
+    Detects absence of critical HTTP security response headers in the application dashboard.
+    Missing X-Frame-Options leaves the application vulnerable to clickjacking attacks.
+    Missing Content-Security-Policy allows XSS exploitation and resource injection.
+    This violates OWASP API Security Top 10 - API8:2023 Security Misconfiguration and
+    CERT-In 2022 web application hardening guidelines. These headers are standard baseline
+    controls for any customer-facing banking application.
+  tags: headers,security-headers,misconfiguration,clickjacking,csp,cyberbank
+  reference:
+    - https://owasp.org/API-Security/editions/2023/en/0xa8-security-misconfiguration/
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+    - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/"
+
+    matchers-condition: or
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: header
+        words:
+          - "X-Frame-Options"
+          - "Content-Security-Policy"
+        condition: or
+        negative: true
+

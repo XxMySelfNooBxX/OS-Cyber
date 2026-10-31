@@ -1,0 +1,43 @@
+id: unauthenticated-customer-api
+
+info:
+  name: Unauthenticated Customer API - PII Exposure (IDOR)
+  author: cyberbank-qa
+  severity: high
+  description: |
+    Detects unauthenticated access to the /api/v1/customer/ endpoint exposing sensitive
+    Personally Identifiable Information (PII) including PAN card numbers, account numbers,
+    email addresses, and account balances without any authentication token. This constitutes
+    a direct IDOR vulnerability and a violation of Indian IT Act Section 43A (Body Corporate
+    Data Protection Failure) and DPDP Act 2023.
+  tags: idor,pii,auth,api-governance,cyberbank
+  reference:
+    - https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/
+    - https://www.meity.gov.in/writereaddata/files/it_act_2000_updated.pdf
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/v1/customer/1001"
+      - "{{BaseURL}}/api/v1/customer/1002"
+
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        words:
+          - "pan_card"
+          - "account_number"
+        condition: and
+
+    extractors:
+      - type: json
+        name: exposed_records
+        json:
+          - ".full_name"
+          - ".account_number"
+          - ".pan_card"
+
