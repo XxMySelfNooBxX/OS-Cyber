@@ -127,3 +127,4 @@ Show evaluators that three distinct services are active:
 ### Step 4: Digital Evidence & Audit History
 1. Click through the **Scan History Sidebar** to contrast the Relaxed scan vs. the Strict scan.
 2. Click **"Print / Export"** to display the clean forensic audit report ready for court or regulatory submission.
+
